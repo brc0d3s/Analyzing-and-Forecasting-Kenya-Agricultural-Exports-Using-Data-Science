@@ -1,2 +1,2 @@
 "0","crop <- read.csv(""../data/Crop_recommendation.csv"")"
-"0","head(crop)"
+"0","print(head(crop))"

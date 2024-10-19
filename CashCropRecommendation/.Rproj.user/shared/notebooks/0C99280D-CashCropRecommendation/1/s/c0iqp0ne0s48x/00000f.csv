@@ -1,0 +1,6 @@
+"0","# Create a histogram for soil pH"
+"0","ggplot(kenyancrops, aes(x = ph)) +"
+"0","  geom_histogram(binwidth = 0.5, fill = ""lightblue"", color = ""black"") +"
+"0","  labs(title = ""Histogram of Soil pH"", x = ""Soil pH"", y = ""Count"") +"
+"0","  theme_minimal()"
+"0",""

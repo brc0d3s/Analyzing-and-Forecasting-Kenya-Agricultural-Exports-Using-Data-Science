@@ -1,10 +1,10 @@
-# Data Manipulation Work space
+# Data Modification Work space
 
 ## \> Import Data
 
 ```{r}
 crop <- read.csv("../data/Crop_recommendation.csv")
-head(crop)
+print(head(crop))
 ```
 
 ```{r}
@@ -20,8 +20,194 @@ print(cropsLabel)
 
 # 
 
-##  \> Load Cash Crops To be Used
+## \> Load Kenyan Cash Crops To be Used
+
+| Original Crop | Matched Kenyan Export Crop | Conditions Rationale                                                         |
+|---------------|---------------|------------------------------------------|
+| Rice          | Tea                        | High rainfall, humid, acidic soil (pH \~5.5-6.5)                             |
+| Maize         | Coffee                     | Warm climate, moderate rainfall, slightly acidic to neutral soil             |
+| Chickpea      | Avocado                    | Warm to hot climates, moderate rainfall, neutral to slightly acidic soil     |
+| Kidneybeans   | Macadamia Nuts             | Warm climates, moderate to high rainfall, slightly acidic soil               |
+| Pigeonpeas    | French Beans               | Warm climates, moderate rainfall, similar legume characteristics             |
+| Mothbeans     | Snow Peas                  | Grows well in cool climates with moderate rainfall                           |
+| Mungbean      | Passion Fruit              | Warm, humid, tropical environments, moderate to heavy rainfall               |
+| Blackgram     | Mango                      | Warm, tropical climate, moderate rainfall, slightly acidic soil              |
+| Lentil        | Pineapple                  | Tropical climates with good rainfall, grows well in acidic soils             |
+| Pomegranate   | Flowers (Roses)            | Moderate climates, well-drained soil, moderate rainfall                      |
+| Banana        | Cabbage                    | Grows in warm climates with moderate to heavy rainfall                       |
+| Mango         | Sugarcane                  | Tropical and subtropical climates, needs high rainfall and warm temperatures |
+| Grapes        | Cashew Nuts                | Warm, dry conditions with moderate rainfall, grows in well-drained soil      |
+| Watermelon    | Tomatoes                   | Warm climates, moderate water needs, similar soil preferences                |
+| Muskmelon     | Spinach                    | Prefers warm temperatures and moderate moisture                              |
+| Apple         | Carrots                    | Grows in cooler climates with moderate rainfall                              |
+| Orange        | Coconuts                   | Thrives in tropical climates with heavy rainfall and warm temperatures       |
+| Papaya        | Sisal                      | Grows in semi-arid to dry conditions, requires warm temperatures             |
+| Coconut       | Sesame Seeds               | Thrives in warm, dry conditions with moderate rainfall                       |
+| Cotton        | Tobacco                    | Grows in warm to hot climates with moderate rainfall                         |
+| Jute          | Chillies                   | Grows in warm climates with moderate humidity and rainfall                   |
+| Coffee        | Pyrethrum                  | Grows well in high altitudes with cooler temperatures                        |
 
 ```{r}
-class(cropsLabel)
+# Mapped Kenyan export crops based on environmental conditions
+
+kenya_export_crops <- c("Tea","Coffee","Avocado","Macadamia Nuts","French Beans","Snow Peas","Passion Fruit","Mango","Pineapple","Flowers (Roses)","Cabbage","Sugarcane","Cashew Nuts","Tomatoes","Spinach","Carrots","Coconuts","Sisal","Sesame Seeds","Tobacco","Chillies","Pyrethrum")
+
 ```
+
+```{r}
+print(kenya_export_crops)
+```
+
+```{r}
+
+# Ensure there are no duplicates in the Kenyan exports list
+if (length(unique(kenya_export_crops)) == length(kenya_export_crops)) {
+    print("No duplicates in the Kenyan export crops.")
+} else {
+    print("There are duplicates in the Kenyan export crops!")
+}
+
+```
+
+```{r}
+# Print original and mapped crop labels to verify
+for (i in 1:length(cropsLabel)) {
+  cat("Original Crop:", cropsLabel[i], "->", "Kenyan Export Crop:", kenya_export_crops[i], "\n")
+}
+```
+
+```{r}
+# Create a named vector for easy replacement (map original crops to Kenyan crops)
+crop_mapping <- setNames(kenya_export_crops, cropsLabel)
+
+
+# Replace the 'label' column in the data frame with the mapped values
+crop$label <- crop_mapping[crop$label]
+
+# Print the first few rows to verify the replacements
+print(head(crop))
+```
+
+# 
+
+## \> Export The new modified Kenyan Cash crops Data
+
+```{r}
+# Specify the file name
+output_file <- "../data/kenyan_cash_crops_conditions.csv"
+
+# Export the data to a CSV file
+write.csv(crop, file = output_file, row.names = FALSE)
+
+# Confirmation message
+cat("Data has been successfully exported to", output_file, "\n")
+```
+
+# 
+
+# 
+
+# Data Cleaning Work space
+
+### Load Data
+
+```{r}
+kenyancrops <- read.csv("../data/kenyan_cash_crops_conditions.csv")
+
+```
+
+### Check for Missing values
+
+```{r}
+missing_vals <- sapply(kenyancrops, function(x) sum(is.na(x)))
+print(missing_vals)
+```
+
+### Check for Duplicate Values
+
+```{r}
+duplicate_rows <- kenyancrops[duplicated(kenyancrops), ]
+
+# Count the number of duplicate rows
+num_duplicates <- nrow(duplicate_rows)
+
+# Print the number of duplicate rows and the duplicate rows themselves
+print(num_duplicates)
+print(duplicate_rows)
+```
+
+### Count Unique Values in a Column
+
+```{r}
+label_counts <- table(kenyancrops$label)
+
+print(label_counts)
+```
+
+# 
+
+# 
+
+# Data Visualization Work space
+
+```{r}
+# Packages Installation and Loading
+
+#install.packages("ggplot2")
+
+library(ggplot2)
+```
+
+### Bar Plot for Crop Counts
+
+```{r}
+#label_counts <- table(kenyancrops$label)  # Count unique values in 'label'
+
+ggplot(data = as.data.frame(label_counts), aes(x = Var1, y = Freq)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Counts of Unique Crops", x = "Crop", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### Scatter Plot for Rainfall vs. Humidity
+
+```{r}
+
+ggplot(kenyancrops, aes(x = rainfall, y = humidity, color = label)) +
+  geom_point() +
+  labs(title = "Scatter Plot of Rainfall vs Humidity", x = "Rainfall", y = "Humidity") +
+  theme_minimal()
+
+```
+
+### Box Plot for Temperature by Crop
+
+```{r}
+# Create a box plot for temperature by crop
+ggplot(kenyancrops, aes(x = label, y = temperature, fill = label)) +
+  geom_boxplot() +
+  labs(title = "Box Plot of Temperature by Crop", x = "Crop", y = "Temperature") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+### Histogram for Soil pH
+
+```{r}
+# Create a histogram for soil pH
+ggplot(kenyancrops, aes(x = ph)) +
+  geom_histogram(binwidth = 0.5, fill = "lightblue", color = "black") +
+  labs(title = "Histogram of Soil pH", x = "Soil pH", y = "Count") +
+  theme_minimal()
+
+```
+
+# 
+
+# 
+
+# 
+
+# MODEL WORKSPACE
