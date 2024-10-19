@@ -1,0 +1,27 @@
+# Data Manipulation Work space
+
+## \> Import Data
+
+```{r}
+crop <- read.csv("../data/Crop_recommendation.csv")
+head(crop)
+```
+
+```{r}
+str(crop)
+```
+
+### Crops currently In the table
+
+```{r}
+cropsLabel <- unique(crop$label)
+print(cropsLabel)
+```
+
+# 
+
+##  \> Load Cash Crops To be Used
+
+```{r}
+class(cropsLabel)
+```
