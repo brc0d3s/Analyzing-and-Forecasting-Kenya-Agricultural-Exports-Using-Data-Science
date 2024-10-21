@@ -211,3 +211,145 @@ ggplot(kenyancrops, aes(x = ph)) +
 # 
 
 # MODEL WORKSPACE
+
+### Load necessary libraries
+
+```{r}
+#install.packages(c("dplyr", "caret", "randomForest", "e1071"))
+
+library(dplyr)
+#library(caret)
+#library(randomForest)
+library(e1071)
+```
+
+> ## 1. Encoding the crops
+
+```{r}
+# Encoding the Kenyan crops
+crop_dict <- list(
+    'Tea' = 1, 'Coffee' = 2, 'Avocado' = 3, 'Macadamia Nuts' = 4, 
+    'French Beans' = 5, 'Snow Peas' = 6, 'Passion Fruit' = 7, 
+    'Mango' = 8, 'Pineapple' = 9, 'Flowers (Roses)' = 10, 'Cabbage' = 11, 
+    'Sugarcane' = 12, 'Cashew Nuts' = 13, 'Tomatoes' = 14, 'Spinach' = 15, 
+    'Carrots' = 16, 'Coconuts' = 17, 'Sisal' = 18, 'Sesame Seeds' = 19, 
+    'Tobacco' = 20, 'Chillies' = 21, 'Pyrethrum' = 22
+)
+
+# Apply encoding
+kenyancrops$crop_num <- unlist(crop_dict[kenyancrops$label])
+
+# Drop the 'label' column
+kenyancrops <- kenyancrops %>% select(-label)
+```
+
+## 2. Train Test Split
+
+```{r}
+set.seed(42)
+# Split the data into training and testing sets (80% training, 20% testing)
+trainIndex <- createDataPartition(kenyancrops$crop_num, p = 0.8, list = FALSE)
+trainData <- kenyancrops[trainIndex,]
+testData <- kenyancrops[-trainIndex,]
+
+# Separate features (X) and target (Y)
+x_train <- trainData %>% select(-crop_num)
+y_train <- trainData$crop_num
+x_test <- testData %>% select(-crop_num)
+y_test <- testData$crop_num
+
+```
+
+## 3. Feature Scaling
+
+```{r}
+# Scale the features using Min-Max Scaling
+preProcess_scale <- preProcess(x_train, method = 'range')
+x_train_scaled <- predict(preProcess_scale, x_train)
+x_test_scaled <- predict(preProcess_scale, x_test)
+
+```
+
+## 4. Model Training
+
+```{r}
+# Initialize models
+models <- list(
+    lg = train(x_train_scaled, y_train, method = "glm"),
+    gnb = train(x_train_scaled, y_train, method = "naive_bayes"),
+    svc = train(x_train_scaled, y_train, method = "svmRadial"),
+    knn = train(x_train_scaled, y_train, method = "knn"),
+    dt = train(x_train_scaled, y_train, method = "rpart"),
+    rf = train(x_train_scaled, y_train, method = "rf"),
+    adaboost = train(x_train_scaled, y_train, method = "adaboost")
+)
+
+# Evaluate the models
+for(name in names(models)) {
+    model <- models[[name]]
+    y_pred <- predict(model, x_test_scaled)
+    accuracy <- confusionMatrix(y_pred, y_test)$overall['Accuracy']
+    print(paste(name, "accuracy:", accuracy))
+}
+
+```
+
+## 5. Predictive System Testing
+
+```{r}
+# Fit the RandomForest model for predictions
+rfc <- randomForest(x_train_scaled, y_train)
+y_pred <- predict(rfc, x_test_scaled)
+accuracy <- confusionMatrix(y_pred, y_test)$overall['Accuracy']
+print(paste("Random Forest accuracy:", accuracy))
+
+# Define a predictive function
+recommendation <- function(N, P, k, temperature, humidity, ph, rainfall) {
+    features <- data.frame(N = N, P = P, k = k, temperature = temperature,
+                           humidity = humidity, ph = ph, rainfall = rainfall)
+    features_scaled <- predict(preProcess_scale, features)
+    prediction <- predict(rfc, features_scaled)
+    return(prediction)
+}
+
+# Test the predictive system
+N <- 20
+P <- 30
+k <- 40
+temperature <- 40
+humidity <- 20
+ph <- 30
+rainfall <- 50
+
+predict_crop <- recommendation(N, P, k, temperature, humidity, ph, rainfall)
+
+# Crop dictionary for output
+crop_dict_rev <- c(1 = 'Tea', 2 = 'Coffee', 3 = 'Avocado', 4 = 'Macadamia Nuts', 5 = 'French Beans',6 = 'Snow Peas', 7 = 'Passion Fruit', 8 = 'Mango', 9 = 'Pineapple', 10 = 'Flowers (Roses)', 11 = 'Cabbage', 12 = 'Sugarcane', 13 = 'Cashew Nuts', 14 = 'Tomatoes', 15 = 'Spinach', 16 = 'Carrots', 17 = 'Coconuts', 18 = 'Sisal', 19 = 'Sesame Seeds', 20 = 'Tobacco', 21 = 'Chillies', 22 = 'Pyrethrum')
+
+if (predict_crop %in% names(crop_dict_rev)) {
+    print(paste(crop_dict_rev[as.character(predict_crop)], "is the best crop to be cultivated."))
+} else {
+    print("Sorry, we are unable to recommend a crop for this environment.")
+}
+
+```
+
+# 
+
+# 
+
+# 
+
+# Save the `rf` model along with the pre processing scaler for use in the Shiny app
+
+```{r}
+# Assuming 'rf' is the best-performing model based on accuracy
+best_model <- models$rf
+
+# Save the trained RandomForest model to an RDS file
+saveRDS(best_model, file = "../models/random_forest_model.rds")
+
+# Save the pre-processing scaler
+saveRDS(preProcess_scale, file = "../models/preprocess_scaler.rds")
+
+```
