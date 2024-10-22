@@ -1,31 +1,27 @@
-#install.packages("shiny")
-#install.packages("shinythemes")
-#install.packages("randomForest")
-#install.packages("e1071")
-
-
-
-
+# Load necessary libraries
 library(shiny)
 library(shinythemes)  # For theme options
-library(caret)
+library(caret)  # For pre-processing
+library(randomForest)  # For prediction model
 
-# Load the pre-trained RandomForest model and the scaler
-rfc <- readRDS("../models/random_forest_model.rds")
-preProcess_scale <- readRDS("../models/preprocess_scaler.rds")
+# Load the pre-trained RandomForest model and scaler
+rfc <- readRDS("./models/random_forest_model.rds")
+preProcess_scale <- readRDS("./models/preprocess_scaler.rds")
 
 # Crop dictionary for mapping predicted crop number to crop name
 crop_dict_rev <- c(
-  1 = 'Tea', 2 = 'Coffee', 3 = 'Avocado', 4 = 'Macadamia Nuts', 5 = 'French Beans', 
-  6 = 'Snow Peas', 7 = 'Passion Fruit', 8 = 'Mango', 9 = 'Pineapple', 10 = 'Flowers (Roses)', 
-  11 = 'Cabbage', 12 = 'Sugarcane', 13 = 'Cashew Nuts', 14 = 'Tomatoes', 15 = 'Spinach', 
-  16 = 'Carrots', 17 = 'Coconuts', 18 = 'Sisal', 19 = 'Sesame Seeds', 20 = 'Tobacco', 
-  21 = 'Chillies', 22 = 'Pyrethrum'
+  '1' = 'Tea', '2' = 'Coffee', '3' = 'Avocado', '4' = 'Macadamia Nuts',
+  '5' = 'French Beans', '6' = 'Snow Peas', '7' = 'Passion Fruit',
+  '8' = 'Mango', '9' = 'Pineapple', '10' = 'Flowers (Roses)',
+  '11' = 'Cabbage', '12' = 'Sugarcane', '13' = 'Cashew Nuts',
+  '14' = 'Tomatoes', '15' = 'Spinach', '16' = 'Carrots',
+  '17' = 'Coconuts', '18' = 'Sisal', '19' = 'Sesame Seeds',
+  '20' = 'Tobacco', '21' = 'Chillies', '22' = 'Pyrethrum'
 )
 
 # Define UI
 ui <- fluidPage(
-  theme = shinytheme("cerulean"),  # Using a nice theme
+  theme = shinytheme("cerulean"),  # Using a theme
   titlePanel("🌾 Crop Recommendation System"),
   
   tags$style(HTML("
@@ -41,10 +37,10 @@ ui <- fluidPage(
       numericInput("N", "Nitrogen (N)", value = 20, min = 0),
       numericInput("P", "Phosphorus (P)", value = 30, min = 0),
       numericInput("K", "Potassium (K)", value = 40, min = 0),
-      numericInput("temperature", "Temperature (°C)", value = 40, min = 0, step = 0.1),
-      numericInput("humidity", "Humidity (%)", value = 20, min = 0, step = 0.1),
-      numericInput("ph", "Soil pH", value = 30, min = 0, step = 0.1),
-      numericInput("rainfall", "Rainfall (mm)", value = 50, min = 0),
+      numericInput("temperature", "Temperature (°C)", value = 25, min = 0, step = 0.1),
+      numericInput("humidity", "Humidity (%)", value = 70, min = 0, step = 0.1),
+      numericInput("ph", "Soil pH", value = 6.5, min = 0, step = 0.1),
+      numericInput("rainfall", "Rainfall (mm)", value = 100, min = 0),
       actionButton("submit", "Recommend Crop", class = "btn btn-primary")
     ),
     
@@ -65,6 +61,9 @@ server <- function(input, output) {
   recommendation <- function(N, P, K, temperature, humidity, ph, rainfall) {
     features <- data.frame(N = N, P = P, K = K, temperature = temperature,
                            humidity = humidity, ph = ph, rainfall = rainfall)
+    
+    # Ensure the columns are aligned with the training data
+    features <- features[, colnames(preProcess_scale$range), drop = FALSE]
     
     # Scale the input features using the saved scaler
     features_scaled <- predict(preProcess_scale, features)
