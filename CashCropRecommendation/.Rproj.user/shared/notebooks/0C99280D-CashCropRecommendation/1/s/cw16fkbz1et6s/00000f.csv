@@ -1,7 +1,0 @@
-"0","#label_counts <- table(kenyancrops$label)  # Count unique values in 'label'"
-"0",""
-"0","ggplot(data = as.data.frame(label_counts), aes(x = Var1, y = Freq)) +"
-"0","  geom_bar(stat = ""identity"", fill = ""steelblue"") +"
-"0","  labs(title = ""Counts of Unique Crops"", x = ""Crop"", y = ""Count"") +"
-"0","  theme_minimal() +"
-"0","  theme(axis.text.x = element_text(angle = 45, hjust = 1))"

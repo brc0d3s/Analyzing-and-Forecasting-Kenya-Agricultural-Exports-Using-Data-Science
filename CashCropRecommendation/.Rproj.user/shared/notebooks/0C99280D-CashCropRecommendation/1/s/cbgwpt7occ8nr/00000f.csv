@@ -1,6 +1,0 @@
-"0",""
-"0","ggplot(kenyancrops, aes(x = rainfall, y = humidity, color = label)) +"
-"0","  geom_point() +"
-"0","  labs(title = ""Scatter Plot of Rainfall vs Humidity"", x = ""Rainfall"", y = ""Humidity"") +"
-"0","  theme_minimal()"
-"0",""
