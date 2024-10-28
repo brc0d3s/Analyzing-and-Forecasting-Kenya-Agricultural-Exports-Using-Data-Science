@@ -9,5 +9,5 @@ library(rsconnect)
 ```
 
 ```{r}
-rsconnect::setAccountInfo(name='brc0d3s', token='7E4D76872334B03B5B03D6F10DF5C6CA', secret='YGFnKLpSRoownE5BIpidhx1IwbtZ8LA48Swtfuhk')
+rsconnect::setAccountInfo(name="<ACCOUNT>", token="<TOKEN>", secret="<SECRET>")
 ```
