@@ -5,8 +5,8 @@ library(caret)  # For pre-processing
 library(randomForest)  # For prediction model
 
 # Load the pre-trained RandomForest model and scaler
-rfc <- readRDS("./models/random_forest_model.rds")
-preProcess_scale <- readRDS("./models/preprocess_scaler.rds")
+rfc <- readRDS("random_forest_model.rds")
+preProcess_scale <- readRDS("preprocess_scaler.rds")
 
 # Crop dictionary for mapping predicted crop number to crop name
 crop_dict_rev <- c(
