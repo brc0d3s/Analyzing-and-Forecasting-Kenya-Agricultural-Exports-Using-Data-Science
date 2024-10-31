@@ -5,7 +5,7 @@ account: brc0d3s
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 13157467
-bundleId: 9281582
+bundleId: 9296716
 url: https://brc0d3s.shinyapps.io/KE-CashCropRecommendation/
 version: 1
 asMultiple: FALSE
