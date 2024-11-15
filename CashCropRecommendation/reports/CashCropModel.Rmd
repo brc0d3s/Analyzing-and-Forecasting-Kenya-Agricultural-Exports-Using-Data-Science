@@ -23,7 +23,7 @@ print(cropsLabel)
 ## \> Load Kenyan Cash Crops To be Used
 
 | Original Crop | Matched Kenyan Export Crop | Conditions Rationale |
-|------------------|------------------|------------------------------------|
+|----|----|----|
 | Rice | Tea | High rainfall, humid, acidic soil (pH \~5.5-6.5) |
 | Maize | Coffee | Warm climate, moderate rainfall, slightly acidic to neutral soil |
 | Chickpea | Avocado | Warm to hot climates, moderate rainfall, neutral to slightly acidic soil |
