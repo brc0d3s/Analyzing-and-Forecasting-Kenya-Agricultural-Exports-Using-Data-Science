@@ -1,13 +1,13 @@
 # Deployment To **shinyapps.io**
 
 ```{r}
-install.packages('rsconnect')
+#install.packages('rsconnect')
 ```
 
 ```{r}
-library(rsconnect)
+#library(rsconnect)
 ```
 
 ```{r}
-rsconnect::setAccountInfo(name="<ACCOUNT>", token="<TOKEN>", secret="<SECRET>")
+#rsconnect::setAccountInfo(name="<ACCOUNT>", token="<TOKEN>", secret="<SECRET>")
 ```

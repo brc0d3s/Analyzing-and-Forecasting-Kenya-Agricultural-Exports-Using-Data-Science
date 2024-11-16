@@ -1,3 +1,7 @@
+---
+---
+---
+
 # Data Modification Work space
 
 ## \> Import Data
@@ -23,7 +27,7 @@ print(cropsLabel)
 ## \> Load Kenyan Cash Crops To be Used
 
 | Original Crop | Matched Kenyan Export Crop | Conditions Rationale |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Rice | Tea | High rainfall, humid, acidic soil (pH \~5.5-6.5) |
 | Maize | Coffee | Warm climate, moderate rainfall, slightly acidic to neutral soil |
 | Chickpea | Avocado | Warm to hot climates, moderate rainfall, neutral to slightly acidic soil |
@@ -141,7 +145,12 @@ print(duplicate_rows)
 ```{r}
 label_counts <- table(kenyancrops$label)
 
-print(label_counts)
+#print(label_counts)
+
+# Print each crop and its count in a well-aligned format
+for (i in names(label_counts)) {
+  cat(sprintf("%-20s %d\n", i, label_counts[i]))
+}
 ```
 
 # 
@@ -276,21 +285,20 @@ x_test_scaled <- predict(preProcess_scale, x_test)
 ## 4. Model Training
 
 ```{r}
-# Define trainControl to suppress verbose output
+# Define trainControl
 control <- trainControl(method = "cv", number = 5, verboseIter = FALSE)
 
-
-# Initialize models
+# Initialize models training algorithms
 models <- list(
-    multinom = train(x_train_scaled, y_train, method = "multinom", trControl = control),
-    gnb = train(x_train_scaled, y_train, method = "naive_bayes", trControl = control),
-    svc = train(x_train_scaled, y_train, method = "svmRadial", trControl = control),
-    knn = train(x_train_scaled, y_train, method = "knn", trControl = control),
-    dt = train(x_train_scaled, y_train, method = "rpart", trControl = control),
-    rf = train(x_train_scaled, y_train, method = "rf", trControl = control)
+    multinom = train(x_train_scaled, y_train, method = "multinom", trControl = control), # Multinomial Logistic Regression
+    rf = train(x_train_scaled, y_train, method = "rf", trControl = control), # Random Forest
+    svc = train(x_train_scaled, y_train, method = "svmRadial", trControl = control), # Support Vector Machine
+    knn = train(x_train_scaled, y_train, method = "knn", trControl = control), #  K-Nearest Neighbors
+    dt = train(x_train_scaled, y_train, method = "rpart", trControl = control), # Decision Tree
+    gnb = train(x_train_scaled, y_train, method = "naive_bayes", trControl = control) # Gaussian Naive Bayes
 )
 
-# Evaluate models
+# Evaluate machine learning models
 model_accuracies <- sapply(models, function(model) {
     if (!is.null(model)) {
         y_pred <- predict(model, x_test_scaled)
@@ -304,15 +312,16 @@ model_accuracies <- sapply(models, function(model) {
 print("Model Accuracies:")
 print(model_accuracies)
 
+
+# Select the best model based on accuracy
+best_model_name <- names(which.max(model_accuracies))
+print(paste("Best model:", best_model_name))
+
 ```
 
 ## 5. Fit the Best (Random Forest) model
 
 ```{r}
-# Select the best model based on accuracy
-best_model_name <- names(which.max(model_accuracies))
-print(paste("Best model:", best_model_name))
-
 # Fit the Random Forest model (as it’s likely the best)
 if (best_model_name == "rf") {
     rfc <- models$rf
