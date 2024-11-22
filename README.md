@@ -15,8 +15,3 @@
 
 ---
 
-### **Forecasting Model**
-#### **Cash Crop Model**
-<div align="center">
-  <iframe src="Documentation/CashCropModel.html" width="100%" height="600px" style="border:none;"></iframe>
-</div>
