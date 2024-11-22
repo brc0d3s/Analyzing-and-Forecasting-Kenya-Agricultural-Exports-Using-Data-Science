@@ -6,22 +6,12 @@
 
 ## Intro
 <div align="center">
-<img  src="Documentation/Intro.PNG"/>
+<img  src="Documentation/Intro.png"/>
 </div>
 
 #
 
 ## System
 <div align="center">
-<img src="Documentation/Dashboard.PNG"/>
+<img src="Documentation/Dashboard.png"/>
 </div>
-
-
-#
-
-# Analysis Notebook
-<div align="center">
-<img src="Documentation/Data_Manipulation_Notebook.pdf"/>
-</div>
-
-#
